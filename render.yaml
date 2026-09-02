@@ -1,6 +1,6 @@
 # Blueprint: https://dashboard.render.com/blueprints
-# After the first deploy, add GEMINI_API_KEY on ledgerly-api,
-# then seed the demo user from the API shell: npx tsx prisma/seed.ts
+# After deploy, set GEMINI_API_KEY and CORS_ORIGIN on the API,
+# VITE_API_URL on the static site, then seed: npx tsx prisma/seed.ts
 
 databases:
   - name: ledgerly-db
@@ -29,26 +29,26 @@ services:
         generateValue: true
       - key: GEMINI_API_KEY
         sync: false
+      - key: CORS_ORIGIN
+        sync: false
       - key: DATABASE_URL
         fromDatabase:
           name: ledgerly-db
           property: connectionString
-      - key: CORS_ORIGIN
-        fromService:
-          name: ledgerly-web
-          type: web
-          property: host
 
   - type: web
     name: ledgerly-web
     runtime: static
-    plan: free
     rootDir: frontend
     buildCommand: npm install && npm run build
     staticPublishPath: dist
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
     envVars:
       - key: VITE_API_URL
         fromService:
           name: ledgerly-api
           type: web
-          property: host
+          envVarKey: RENDER_EXTERNAL_URL

@@ -100,10 +100,8 @@ The repo includes `render.yaml`. Easiest path: Blueprint from GitHub.
 2. Open [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints) → **New Blueprint Instance**.
 3. Select the `ledgerly` repo. Render creates Postgres, the API, and the static frontend.
 4. On **ledgerly-api** → Environment, set `GEMINI_API_KEY`.
-5. `CORS_ORIGIN` and `VITE_API_URL` may come through as hostnames only. Change them to full URLs:
-   - API `CORS_ORIGIN` = `https://ledgerly-web.onrender.com` (your web URL)
-   - Web `VITE_API_URL` = `https://ledgerly-api.onrender.com` (your API URL)
-6. Manual deploy both services after those URLs are set (`VITE_API_URL` is baked in at build time).
+5. On **ledgerly-api**, set `CORS_ORIGIN` to your static site URL (`https://ledgerly-web.onrender.com`).
+6. Confirm **ledgerly-web** has `VITE_API_URL` = your API URL (`https://ledgerly-api.onrender.com`), then **Manual Deploy** the static site.
 7. On **ledgerly-api** → Shell:
 
 ```bash
