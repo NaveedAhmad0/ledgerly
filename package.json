@@ -1,0 +1,24 @@
+{
+  "name": "ledgerly",
+  "private": true,
+  "description": "Ledgerly — TypeScript full-stack invoicing platform (React, Node, PostgreSQL, GraphQL)",
+  "workspaces": [
+    "backend",
+    "frontend"
+  ],
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w backend\" \"npm run dev -w frontend\"",
+    "build": "npm run build -w backend && npm run build -w frontend",
+    "test": "npm run test -w backend && npm run test -w frontend",
+    "test:e2e": "npm run test:e2e -w frontend",
+    "db:up": "docker compose up -d db",
+    "db:migrate": "npm run prisma:migrate -w backend",
+    "db:seed": "npm run db:seed -w backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

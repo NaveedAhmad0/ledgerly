@@ -1,0 +1,47 @@
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ledgerly
+      POSTGRES_PASSWORD: ledgerly
+      POSTGRES_DB: ledgerly
+    ports:
+      - "5432:5432"
+    volumes:
+      - ledgerly_pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ledgerly"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: ./backend
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://ledgerly:ledgerly@db:5432/ledgerly
+      JWT_SECRET: ${JWT_SECRET:-local-dev-secret-change-me-16}
+      JWT_EXPIRES_IN: 7d
+      PORT: 8000
+      NODE_ENV: production
+      CORS_ORIGIN: http://localhost:8080
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: gemini-3.6-flash
+    ports:
+      - "8000:8000"
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: http://localhost:8000
+    depends_on:
+      - api
+    ports:
+      - "8080:80"
+
+volumes:
+  ledgerly_pg:
