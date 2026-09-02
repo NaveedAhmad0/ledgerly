@@ -4,7 +4,14 @@ import { z } from "zod";
 const envSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).default("development"),
   PORT: z.coerce.number().default(8000),
-  DATABASE_URL: z.string().min(1),
+  DATABASE_URL: z
+    .string()
+    .min(1)
+    .transform((value) => {
+      if (value.includes("localhost") || value.includes("sslmode=")) return value;
+      const sep = value.includes("?") ? "&" : "?";
+      return `${value}${sep}sslmode=require`;
+    }),
   JWT_SECRET: z.string().min(16),
   JWT_EXPIRES_IN: z.string().default("7d"),
   CORS_ORIGIN: z
