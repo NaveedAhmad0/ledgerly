@@ -4,7 +4,7 @@ import { prisma } from "./lib/prisma";
 
 const app = createApp();
 
-const server = app.listen(env.PORT, () => {
+const server = app.listen(env.PORT, "0.0.0.0", () => {
   console.log(`Ledgerly API listening on :${env.PORT}`);
 });
 

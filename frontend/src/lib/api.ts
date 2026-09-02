@@ -1,7 +1,13 @@
 import { getToken } from "./auth";
 import type { ExtractedInvoice, Invoice, User } from "./types";
 
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+function apiBaseUrl() {
+  const raw = import.meta.env.VITE_API_URL ?? "http://localhost:8000";
+  if (raw.startsWith("http://") || raw.startsWith("https://")) return raw;
+  return `https://${raw}`;
+}
+
+const API_URL = apiBaseUrl();
 
 async function request<T>(path: string, init: RequestInit = {}): Promise<T> {
   const headers = new Headers(init.headers);

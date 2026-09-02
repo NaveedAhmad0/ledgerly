@@ -92,6 +92,45 @@ Copy `.env.example` into `backend/.env` and add your `GEMINI_API_KEY` if you wan
 
 ---
 
+## Deploy on Render
+
+The repo includes `render.yaml`. Easiest path: Blueprint from GitHub.
+
+1. Push this repo to GitHub (`https://github.com/NaveedAhmad0/ledgerly`).
+2. Open [dashboard.render.com/blueprints](https://dashboard.render.com/blueprints) → **New Blueprint Instance**.
+3. Select the `ledgerly` repo. Render creates Postgres, the API, and the static frontend.
+4. On **ledgerly-api** → Environment, set `GEMINI_API_KEY`.
+5. `CORS_ORIGIN` and `VITE_API_URL` may come through as hostnames only. Change them to full URLs:
+   - API `CORS_ORIGIN` = `https://ledgerly-web.onrender.com` (your web URL)
+   - Web `VITE_API_URL` = `https://ledgerly-api.onrender.com` (your API URL)
+6. Manual deploy both services after those URLs are set (`VITE_API_URL` is baked in at build time).
+7. On **ledgerly-api** → Shell:
+
+```bash
+npx tsx prisma/seed.ts
+```
+
+8. Open the static site URL. Demo login: `demo@ledgerly.dev` / `DemoPass12$`.
+
+Free web services sleep after idle time; the first request can take 30–60 seconds. If free Postgres is not offered, pick the cheapest paid database plan.
+
+### Manual setup (no Blueprint)
+
+1. **PostgreSQL** → New → copy the Internal Database URL.
+2. **Web Service** (`ledgerly-api`)
+   - Root directory: `backend`
+   - Build: `npm install && npm run build`
+   - Start: `npx prisma migrate deploy && node dist/server.js`
+   - Env: `DATABASE_URL`, `JWT_SECRET` (16+ chars), `JWT_EXPIRES_IN=7d`, `NODE_ENV=production`, `CORS_ORIGIN=https://YOUR-WEB.onrender.com`, `GEMINI_API_KEY`, `GEMINI_MODEL=gemini-3.6-flash`
+3. **Static Site** (`ledgerly-web`)
+   - Root directory: `frontend`
+   - Build: `npm install && npm run build`
+   - Publish: `dist`
+   - Env: `VITE_API_URL=https://YOUR-API.onrender.com`
+4. Seed the demo user from the API shell, then send Smartclip the live URL + repo + demo login.
+
+---
+
 ## Tests
 
 ```bash

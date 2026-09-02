@@ -1,0 +1,54 @@
+# Blueprint: https://dashboard.render.com/blueprints
+# After the first deploy, add GEMINI_API_KEY on ledgerly-api,
+# then seed the demo user from the API shell: npx tsx prisma/seed.ts
+
+databases:
+  - name: ledgerly-db
+    databaseName: ledgerly
+    user: ledgerly
+    plan: free
+    postgresMajorVersion: "16"
+
+services:
+  - type: web
+    name: ledgerly-api
+    runtime: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install && npm run build
+    startCommand: npx prisma migrate deploy && node dist/server.js
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: JWT_EXPIRES_IN
+        value: 7d
+      - key: GEMINI_MODEL
+        value: gemini-3.6-flash
+      - key: JWT_SECRET
+        generateValue: true
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: ledgerly-db
+          property: connectionString
+      - key: CORS_ORIGIN
+        fromService:
+          name: ledgerly-web
+          type: web
+          property: host
+
+  - type: web
+    name: ledgerly-web
+    runtime: static
+    plan: free
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: ledgerly-api
+          type: web
+          property: host
