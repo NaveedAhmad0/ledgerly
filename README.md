@@ -102,11 +102,7 @@ The repo includes `render.yaml`. Easiest path: Blueprint from GitHub.
 4. On **ledgerly-api** → Environment, set `GEMINI_API_KEY`.
 5. On **ledgerly-api**, set `CORS_ORIGIN` to your static site URL (`https://ledgerly-web.onrender.com`).
 6. Confirm **ledgerly-web** has `VITE_API_URL` = your API URL (`https://ledgerly-api.onrender.com`), then **Manual Deploy** the static site.
-7. On **ledgerly-api** → Shell:
-
-```bash
-npx tsx prisma/seed.ts
-```
+7. The API creates `demo@ledgerly.dev` on boot (free Render plans have no Shell). Redeploy **ledgerly-api** after the first successful deploy if login fails.
 
 8. Open the static site URL. Demo login: `demo@ledgerly.dev` / `DemoPass12$`.
 
@@ -125,7 +121,7 @@ Free web services sleep after idle time; the first request can take 30–60 seco
    - Build: `npm install && npm run build`
    - Publish: `dist`
    - Env: `VITE_API_URL=https://YOUR-API.onrender.com`
-4. Seed the demo user from the API shell, then send Smartclip the live URL + repo + demo login.
+4. Redeploy the API so it can create the demo user on boot, then send Smartclip the live URL + repo + demo login.
 
 ---
 
